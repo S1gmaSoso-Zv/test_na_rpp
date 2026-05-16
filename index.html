@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Еда и тело: всё ли в порядке?</title>
+    <meta name="description" content="Интерактивный тест на осознанное отношение к еде и возможные риски РПП.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+    <style>
+        /* === CSS VARIABLES === */
+        :root {
+            --bg-color: #0b0f19;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-color: #818cf8;
+            --accent-hover: #6366f1;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --warning-color: #fbbf24;
+            --danger-color: #f87171;
+            --success-color: #34d399;
+            --transition-speed: 0.4s;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* === RESET & BASE === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--bg-color);
+            font-size: 16px; /* Базовый размер для rem */
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        /* === BACKGROUND ANIMATION === */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.12), transparent 35%),
+                        radial-gradient(circle at 85% 30%, rgba(147, 51, 234, 0.12), transparent 35%);
+            animation: pulseBg 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        /* === FLUID TYPOGRAPHY === */
+        h1, h2, h3 {
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: clamp(0.75rem, 2vw, 1rem);
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw + 1rem, 4.5rem);
+            background: linear-gradient(to right, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        h2 { font-size: clamp(1.5rem, 3vw + 0.5rem, 2.5rem); }
+        h3 { font-size: clamp(1.25rem, 2.5vw + 0.5rem, 1.75rem); }
+
+        p {
+            font-size: clamp(1rem, 1.5vw + 0.5rem, 1.125rem);
+            color: var(--text-muted);
+            margin-bottom: clamp(1rem, 3vw, 1.5rem);
+        }
+
+        /* === LAYOUT & CONTAINERS === */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 5vw, 32px);
+        }
+
+        section {
+            padding: clamp(60px, 10vh, 120px) 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* === GLASSMORPHISM === */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: clamp(16px, 4vw, 24px);
+            padding: clamp(24px, 5vw, 48px);
+            box-shadow: var(--glass-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+        }
+
+        @media (hover: hover) {
+            .glass-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        /* === BUTTONS === */
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(14px, 2vw, 18px) clamp(24px, 4vw, 40px);
+            font-size: clamp(1rem, 1.5vw + 0.5rem, 1.125rem);
+            font-weight: 500;
+            color: #fff;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(129, 140, 248, 0.3);
+            width: max-content;
+            max-width: 100%;
+        }
+
+        @media (hover: hover) {
+            .btn:hover {
+                background: var(--accent-hover);
+                box-shadow: 0 0 30px rgba(129, 140, 248, 0.6);
+                transform: translateY(-2px);
+            }
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            box-shadow: none;
+            width: 100%;
+        }
+
+        @media (hover: hover) {
+            .btn-outline:hover {
+                background: rgba(255, 255, 255, 0.1);
+                box-shadow: none;
+            }
+        }
+
+        /* === HERO SECTION === */
+        .hero {
+            text-align: center;
+        }
+        
+        .hero p {
+            max-width: 700px;
+            margin: 0 auto clamp(2rem, 5vw, 3rem) auto;
+        }
+
+        /* === DISCLAIMER SECTION === */
+        .disclaimer-card {
+            border-left: clamp(4px, 1vw, 6px) solid var(--warning-color);
+            position: relative;
+        }
+
+        .disclaimer-title {
+            color: var(--warning-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .disclaimer-title svg {
+            flex-shrink: 0;
+            width: clamp(24px, 5vw, 32px);
+            height: clamp(24px, 5vw, 32px);
+        }
+
+        /* === QUIZ SECTION === */
+        .quiz-container {
+            position: relative;
+            min-height: clamp(400px, 60vh, 500px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: clamp(4px, 1vw, 8px);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
+
+        .question-text {
+            color: var(--text-main);
+            margin-bottom: clamp(1rem, 3vw, 1.5rem);
+            font-weight: 500;
+        }
+
+        .footnote {
+            font-size: clamp(0.85rem, 1.2vw + 0.4rem, 0.95rem);
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: clamp(12px, 3vw, 20px);
+            border-radius: 12px;
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+            border-left: 3px solid var(--accent-color);
+            line-height: 1.5;
+        }
+
+        .answers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: clamp(10px, 3vw, 20px);
+            margin-top: auto; /* Прижимаем кнопки вниз карточки */
+        }
+
+        /* Quiz Transitions */
+        .quiz-content {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            position: absolute;
+            visibility: hidden;
+        }
+
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+            position: relative;
+            visibility: visible;
+        }
+
+        /* === RESULTS SECTION === */
+        #result-container {
+            display: none;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .result-icon {
+            font-size: clamp(3rem, 8vw, 5rem);
+            margin-bottom: 1rem;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform: scale(0);
+        }
+
+        @keyframes popIn {
+            to { transform: scale(1); }
+        }
+
+        .result-safe { color: var(--success-color); }
+        .result-warning { color: var(--warning-color); }
+        .result-danger { color: var(--danger-color); }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: clamp(1.5rem, 4vw, 2rem) 0;
+            border-top: 1px solid var(--glass-border);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: clamp(0.8rem, 1vw + 0.5rem, 0.9rem);
+            margin-top: auto;
+        }
+
+        /* === REVEAL ANIMATIONS === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === SPECIFIC MEDIA QUERIES === */
+        /* Телефоны (вертикальные) */
+        @media (max-width: 480px) {
+            .hero .btn { width: 100%; }
+            .answers { grid-template-columns: 1fr; }
+            section { min-height: auto; padding: 80px 0; }
+            .hero { padding-top: 100px; }
+            .quiz-container { min-height: 450px; }
+        }
+
+        /* Телефоны (горизонтальные) и маленькие планшеты */
+        @media (max-height: 600px) and (orientation: landscape) {
+            section { min-height: auto; padding: 60px 0; }
+            .hero { padding-top: 80px; }
+            .quiz-container { min-height: auto; }
+            .answers { margin-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="animated-bg"></div>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="home">
+        <div class="container reveal">
+            <h1>Еда и тело:<br>всё ли в порядке?</h1>
+            <p>Многие считают, что РПП — это просто временный период «увлечения диетами». Однако с точки зрения биологии, это опасный процесс, который запускает каскад изменений в организме. Поэтому важно заметить проблему на первых этапах.</p>
+            <button class="btn" onclick="scrollToElement('disclaimer')">Пройти тест</button>
+        </div>
+    </section>
+
+    <!-- DISCLAIMER SECTION -->
+    <section id="disclaimer">
+        <div class="container reveal">
+            <div class="glass-card disclaimer-card">
+                <h2 class="disclaimer-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Важное предупреждение
+                </h2>
+                <p>Информация на этом сайте предназначена исключительно для ознакомительных целей. Данный тест не является медицинским инструментом и не может заменить консультацию профессионального врача (психиатра, психотерапевта или эндокринолога). Только квалифицированный специалист может поставить диагноз и назначить лечение. Если ты чувствуешь, что еда и вес стали контролировать твою жизнь, пожалуйста, обратись за помощью к взрослым, которым доверяешь, или к медицинскому специалисту.</p>
+                <div style="display: flex; justify-content: flex-start; margin-top: 1.5rem;">
+                    <button class="btn btn-outline" style="width: auto; padding-left: 2rem; padding-right: 2rem;" onclick="scrollToElement('quiz')">Я понимаю, начать тест</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUIZ SECTION -->
+    <section id="quiz">
+        <div class="container reveal">
+            <div class="glass-card quiz-container">
+                
+                <!-- Test Interface -->
+                <div id="test-interface" class="quiz-content">
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                    
+                    <h3 class="question-text" id="question-text">Загрузка вопроса...</h3>
+                    <div class="footnote" id="footnote-text"></div>
+                    
+                    <div class="answers">
+                        <button class="btn btn-outline" onclick="handleAnswer(true)">Да</button>
+                        <button class="btn btn-outline" onclick="handleAnswer(false)">Нет</button>
+                    </div>
+                </div>
+
+                <!-- Result Interface -->
+                <div id="result-container" class="quiz-content" style="display: none;">
+                    <div class="result-icon" id="result-icon">🌱</div>
+                    <h2 id="result-title">Результат</h2>
+                    <p id="result-desc">Описание результата</p>
+                    <button class="btn" onclick="restartTest()" style="margin-top: 20px;">Пройти тест заново</button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p style="margin: 0; color: inherit; font-size: inherit;">Этот сайт создан исключительно в образовательных целях.</p>
+        </div>
+    </footer>
+
+    <script>
+        /* === DATA === */
+        const questions = [
+            {
+                question: "Можно ли сказать, что пища доминирует в вашей жизни?",
+                footnote: "В норме еда — это топливо. Если мозг постоянно зациклен на ней, это признак когнитивной ригидности. Биологически это означает, что префронтальная кора мозга перегружена одной доминантой, что мешает учебе и развитию."
+            },
+            {
+                question: "Считаете ли вы себя толстой(ым), несмотря на то, что окружающие говорят, что вы слишком худая(ой)?",
+                footnote: "Это симптом дисморфофобии. Мозг буквально неверно интерпретирует сигналы от зрительной коры, искажая реальное изображение тела."
+            },
+            {
+                question: "Беспокоит ли вас утрата контроля над тем, сколько вы едите?",
+                footnote: "Это признак потери гибкости поведения. Тревога и беспокойство из-за съеденного — первые признаки расстройства."
+            },
+            {
+                question: "Приходилось ли вам вызывать рвоту или очищаться иным способом из-за того, что вы чувствовали себя чрезвычайно объевшейся(имся)?",
+                footnote: "Это самый опасный и явный признак РПП. Такие действия приводят к электролитному дисбалансу и напрямую мешают работе сердца."
+            },
+            {
+                question: "Бывает ли так, что ты ешь до появления боли в животе или чувства, что больше не можешь вдохнуть?",
+                footnote: "Это признак компульсивного переедания. Биологически это говорит о нарушении связи между гормонами лептин (сытость) и грелин (голод)."
+            }
+        ];
+
+        /* === STATE === */
+        let currentQuestionIndex = 0;
+        let yesCount = 0;
+        let isTransitioning = false;
+
+        /* === DOM ELEMENTS === */
+        const testInterface = document.getElementById('test-interface');
+        const resultContainer = document.getElementById('result-container');
+        const questionText = document.getElementById('question-text');
+        const footnoteText = document.getElementById('footnote-text');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const resultIcon = document.getElementById('result-icon');
+        const resultTitle = document.getElementById('result-title');
+        const resultDesc = document.getElementById('result-desc');
+
+        /* === FUNCTIONS === */
+        function initTest() {
+            currentQuestionIndex = 0;
+            yesCount = 0;
+            
+            resultContainer.classList.remove('fade-in');
+            resultContainer.classList.add('fade-out');
+            
+            setTimeout(() => {
+                resultContainer.style.display = 'none';
+                testInterface.style.display = 'flex';
+                renderQuestion();
+            }, 50);
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            // Update texts
+            questionText.textContent = q.question;
+            footnoteText.textContent = q.footnote;
+            
+            // Update progress bar
+            const progressPercent = ((currentQuestionIndex) / questions.length) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            // Fade in
+            testInterface.classList.remove('fade-out');
+            testInterface.classList.add('fade-in');
+            isTransitioning = false;
+        }
+
+        function handleAnswer(isYes) {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            if (isYes) yesCount++;
+
+            // Fade out
+            testInterface.classList.remove('fade-in');
+            testInterface.classList.add('fade-out');
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    renderQuestion();
+                } else {
+                    showResult();
+                }
+            }, 400); // Совпадает с CSS transition
+        }
+
+        function showResult() {
+            testInterface.style.display = 'none';
+            resultContainer.style.display = 'flex';
+            
+            // 100% progress
+            progressBar.style.width = '100%';
+
+            // Determine result category
+            if (yesCount <= 1) {
+                resultIcon.textContent = "💚";
+                resultTitle.textContent = "Скорее всего, твои отношения с едой стабильны";
+                resultTitle.className = "result-safe";
+                resultDesc.textContent = "Сейчас твой организм не показывает выраженных признаков тревоги. Важно продолжать заботиться о себе и сохранять здоровое отношение к питанию.";
+            } else if (yesCount <= 3) {
+                resultIcon.textContent = "⚠️";
+                resultTitle.textContent = "Средний риск";
+                resultTitle.className = "result-warning";
+                resultDesc.textContent = "Твой организм уже подает сигналы тревоги. Важно вовремя заметить их и не оставаться с этим в одиночку.";
+            } else {
+                resultIcon.textContent = "❤️‍🩹";
+                resultTitle.textContent = "Важно обратиться за помощью";
+                resultTitle.className = "result-danger";
+                resultDesc.textContent = "Это говорит о том, что организм находится в состоянии критического стресса. Пожалуйста, не откладывай обращение к специалисту.";
+            }
+
+            // Animate result appearance (нужен небольшой таймаут для срабатывания display: flex перед анимацией)
+            setTimeout(() => {
+                resultContainer.classList.remove('fade-out');
+                resultContainer.classList.add('fade-in');
+                // Перезапуск анимации иконки
+                resultIcon.style.animation = 'none';
+                resultIcon.offsetHeight; /* trigger reflow */
+                resultIcon.style.animation = 'popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+            }, 50);
+        }
+
+        function restartTest() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+            
+            resultContainer.classList.remove('fade-in');
+            resultContainer.classList.add('fade-out');
+            
+            setTimeout(() => {
+                initTest();
+            }, 400);
+        }
+
+        function scrollToElement(id) {
+            const el = document.getElementById(id);
+            if(el) {
+                const y = el.getBoundingClientRect().top + window.scrollY - 20; // Небольшой отступ сверху
+                window.scrollTo({top: y, behavior: 'smooth'});
+            }
+        }
+
+        /* === SCROLL REVEAL ANIMATION === */
+        function reveal() {
+            const reveals = document.querySelectorAll(".reveal");
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 50; // Показываем чуть раньше
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+
+        // Оптимизация скролла
+        let scrollTimeout;
+        window.addEventListener("scroll", () => {
+            if (!scrollTimeout) {
+                scrollTimeout = setTimeout(() => {
+                    reveal();
+                    scrollTimeout = null;
+                }, 10);
+            }
+        });
+        
+        // Init
+        initTest();
+        // Даем небольшую задержку перед первым reveal для корректной отрисовки
+        setTimeout(reveal, 100); 
+    </script>
+</body>
+</html>
